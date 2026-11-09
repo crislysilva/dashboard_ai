@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f8fc">
+  <title>TokenScope | Projeto 1</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-icon">✳</span><div><b>TokenScope</b><small>AI ANALYTICS</small></div></div>
+    <div class="side-label">WORKSPACE</div>
+    <a class="nav active" href="{{ url_for('index') }}">▦ &nbsp; Visão geral</a>
+    <div class="side-label">PROJETO</div>
+    <span class="project-link chosen">◈ &nbsp; {{ project }}</span>
+    <div class="side-note">Fonte: CSV local do OpenRouter.<br>Versão para análise de um único projeto; conexão com API em etapa futura.</div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div><span class="eyebrow">ANÁLISE DE USO DE IA · {{ project | upper }}</span><h1>Dashboard de tokens</h1><p>Consumo, custos, desempenho e modelos de inteligência artificial.</p></div>
+      <span class="status"><span class="status-dot"></span> Dados do CSV</span>
+    </header>
+    {% if error %}
+      <section class="empty"><h2>Não foi possível carregar o CSV</h2><p>{{ error }}</p><p>Verifique se o arquivo está na pasta <code>data/</code>.</p></section>
+    {% else %}
+      <section class="data-panel"><div class="data-icon" aria-hidden="true">↗</div><div class="data-information"><span class="eyebrow">FONTE DOS DADOS</span><h2>Projeto 1 <span class="soft">/ OpenRouter</span></h2><p>{{ total_records }} registros importados <span class="sep">•</span> {{ initial_date }} — {{ final_date }} <span class="sep">•</span> Atualização a partir do CSV local</p></div><div class="source-label">CSV LOCAL</div></section>
+      <section class="filters">
+        <div><span class="eyebrow">PERSONALIZE SUA ANÁLISE</span><h2>Filtros</h2></div>
+        <form method="get" action="{{ url_for('index') }}" class="filter-form">
+          <label>De<input type="date" name="start" value="{{ filters.start }}"></label>
+          <label>Até<input type="date" name="end" value="{{ filters.end }}"></label>
+          <label>Provedor<select name="provider"><option value="">Todos</option>{% for p in providers %}<option value="{{ p }}" {% if filters.provider == p %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></label>
+          <label>Modelo<select name="model"><option value="">Todos</option>{% for m in models %}<option value="{{ m }}" {% if filters.model == m %}selected{% endif %}>{{ m }}</option>{% endfor %}</select></label>
+          <button type="submit">Aplicar filtros</button><a class="clear-filters" href="{{ url_for('index') }}">Limpar</a>
+        </form>
+      </section>
+      {% if dashboard %}
+        <section class="metrics">
+          <article class="metric metric-primary"><div class="metric-top"><span>Tokens totais</span><i aria-hidden="true">◈</i></div><strong>{{ dashboard.total }}</strong><small>Entrada + saída</small></article>
+          <article class="metric"><div class="metric-top"><span>Tokens de entrada</span><i aria-hidden="true">↙</i></div><strong>{{ dashboard.input }}</strong><small>Prompt</small></article>
+          <article class="metric"><div class="metric-top"><span>Tokens de saída</span><i aria-hidden="true">↗</i></div><strong>{{ dashboard.output }}</strong><small>Completion</small></article>
+          <article class="metric"><div class="metric-top"><span>Custo total</span><i aria-hidden="true">$</i></div><strong>{{ dashboard.cost }}</strong><small>Dólares americanos (USD)</small></article>
+          <article class="metric"><div class="metric-top"><span>Requisições</span><i aria-hidden="true">⇄</i></div><strong>{{ dashboard.requests }}</strong><small>Registros filtrados</small></article>
+        </section>
+        <section class="secondary-metrics">
+          <div><span>Tokens em cache</span><b>{{ dashboard.cached }}</b></div>
+          <div><span>Tokens de raciocínio</span><b>{{ dashboard.reasoning }}</b></div>
+          <div><span>Tempo médio de geração</span><b>{{ dashboard.avg_latency }}</b></div>
+          <div><span>Custo médio por requisição</span><b>{{ dashboard.avg_cost }}</b></div>
+        </section>
+        <section class="charts">
+          <article class="chart-card"><h2>Consumo de tokens ao longo do tempo</h2><p>Entrada e saída por dia</p>{{ dashboard.charts.usage | safe }}</article>
+          <article class="chart-card"><h2>Evolução dos custos</h2><p>Gasto diário em USD</p>{{ dashboard.charts.cost | safe }}</article>
+          <article class="chart-card chart-card-models"><h2>Modelos com maior consumo de tokens</h2><p>Volume total processado por modelo</p><div id="models-visual" class="models-visual" aria-label="Consumo de tokens por modelo">{{ dashboard.charts.model | safe }}</div></article>
+          <article class="chart-card"><h2>Distribuição por provedor</h2><p>Participação no consumo de tokens</p>{{ dashboard.charts.provider | safe }}</article>
+        </section>
+        <section class="table-card">
+          <div class="table-header"><div><span class="eyebrow">REGISTROS</span><h2>Histórico de requisições</h2><p>Mostrando {{ first }}–{{ last }} de {{ count }} registros</p></div><span class="source-label">Página {{ page }} / {{ pages }}</span></div>
+          <div class="table-wrap"><table><thead><tr><th>Data / hora</th><th>Modelo</th><th>Provedor</th><th>Entrada</th><th>Saída</th><th>Custo</th><th>Geração</th></tr></thead><tbody>
+          {% for r in records %}<tr><td>{{ r.date }}</td><td>{{ r.model }}</td><td>{{ r.provider }}</td><td>{{ r.input }}</td><td>{{ r.output }}</td><td>{{ r.cost }}</td><td>{{ r.latency }}</td></tr>{% endfor %}
+          </tbody></table></div>
+          <div class="pagination">
+            {% if page > 1 %}<a href="{{ url_for('index', page=page-1, **filters) }}">← Anterior</a>{% else %}<span>← Anterior</span>{% endif %}
+            <span>Página {{ page }} de {{ pages }}</span>
+            {% if page < pages %}<a href="{{ url_for('index', page=page+1, **filters) }}">Próxima →</a>{% else %}<span>Próxima →</span>{% endif %}
+          </div>
+        </section>
+      {% else %}
+        <section class="empty"><h2>Nenhum registro encontrado</h2><p>Altere os filtros ou limpe os filtros para visualizar os dados do Projeto 1.</p><a class="clear-filters" href="{{ url_for('index') }}">Limpar filtros</a></section>
+      {% endif %}
+    {% endif %}
+    <footer>TokenScope · Dashboard de análise de tokens · Projeto 1 · Dados locais</footer>
+  </main>
+  <script>
+    // Somente apresentação: os dados e cálculos vêm do app.py.
+    (() => {
+      const palette = ['#7768dc', '#33b2a6', '#f1ac64', '#e78eaa', '#81a7e8', '#9fc879'];
+      const intFmt = new Intl.NumberFormat('pt-BR', {maximumFractionDigits: 0});
+      const compactFmt = new Intl.NumberFormat('pt-BR', {notation: 'compact', maximumFractionDigits: 1});
+      const $ = (selector, root = document) => root.querySelector(selector);
+
+      function drawModelBars(graph) {
+        const host = $('#models-visual');
+        if (!host || !graph || !graph.data) return;
+        const rows = [];
+        for (const trace of graph.data) {
+          if (trace.type !== 'bar' || trace.orientation !== 'h') continue;
+          (trace.y || []).forEach((label, index) => {
+            const value = Number((trace.x || [])[index]);
+            if (label != null && Number.isFinite(value)) rows.push({label: String(label), value});
+          });
+        }
+        if (!rows.length) return;
+        rows.sort((a, b) => b.value - a.value);
+        const max = Math.max(...rows.map(row => row.value), 1);
+        const list = document.createElement('div');
+        list.className = 'token-bars';
+        rows.forEach((row, i) => {
+          const item = document.createElement('div');
+          item.className = 'token-bar-item';
+          const label = document.createElement('div');
+          label.className = 'token-bar-heading';
+          const name = document.createElement('span');
+          name.className = 'token-model-name';
+          name.textContent = row.label;
+          name.title = row.label;
+          const number = document.createElement('strong');
+          number.className = 'token-model-value';
+          number.textContent = intFmt.format(row.value) + ' tokens';
+          label.append(name, number);
+          const track = document.createElement('div');
+          track.className = 'token-bar-track';
+          track.setAttribute('role', 'img');
+          track.setAttribute('aria-label', row.label + ': ' + intFmt.format(row.value) + ' tokens');
+          const fill = document.createElement('div');
+          fill.className = 'token-bar-fill';
+          fill.style.width = (row.value / max * 100).toFixed(4) + '%';
+          track.appendChild(fill);
+          item.append(label, track);
+          list.appendChild(item);
+        });
+        // Substitui apenas a visualização do Plotly, mantendo os dados recebidos.
+        host.replaceChildren(list);
+      }
+
+      async function themeGraph(graph, type) {
+        if (!graph || typeof Plotly === 'undefined') return;
+        const shared = {
+          paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+          font: {family: 'DM Sans, system-ui, sans-serif', color: '#65728a', size: 11},
+          hoverlabel: {bgcolor: '#fff', bordercolor: '#e4e7f2', font: {color: '#242a40'}},
+          'xaxis.gridcolor': '#edf0f6', 'yaxis.gridcolor': '#edf0f6',
+          'xaxis.zeroline': false, 'yaxis.zeroline': false,
+          autosize: true, showlegend: type === 'usage' || type === 'provider'
+        };
+        const options = {
+          cost: {
+            height: 315, margin: {l: 66, r: 12, t: 12, b: 50},
+            'xaxis.type': 'date', 'xaxis.tickformat': '%d/%m', 'xaxis.nticks': 5,
+            'xaxis.tickangle': 0, 'xaxis.title.text': '',
+            'yaxis.tickprefix': '$', 'yaxis.tickformat': ',.0f',
+            'yaxis.nticks': 5, 'yaxis.title.text': '', 'yaxis.rangemode': 'tozero',
+            'yaxis.automargin': false
+          },
+          usage: {
+            height: 315, margin: {l: 58, r: 12, t: 12, b: 74},
+            'xaxis.type': 'date', 'xaxis.tickformat': '%d/%m', 'xaxis.nticks': 5,
+            'xaxis.tickangle': 0, 'yaxis.tickformat': '~s',
+            'xaxis.title.text': '', 'yaxis.title.text': '',
+            'legend.orientation': 'h', 'legend.x': 0, 'legend.y': -0.25
+          },
+          provider: {
+            height: 315, margin: {l: 26, r: 26, t: 18, b: 54},
+            'legend.orientation': 'h', 'legend.y': -0.22, 'legend.x': 0,
+            'legend.font.size': 10
+          }
+        };
+        await Plotly.relayout(graph, {...shared, ...options[type]});
+        if (type === 'cost') await Plotly.restyle(graph, {'marker.color': palette[0]}, [0]);
+        if (type === 'provider') await Plotly.restyle(graph, {'marker.colors': [palette]}, [0]);
+        // Espera a renderização antes de dimensionar a largura do SVG.
+        Plotly.Plots.resize(graph);
+      }
+
+      async function initialise() {
+        if (typeof Plotly === 'undefined') return;
+        const cards = Array.from(document.querySelectorAll('.chart-card'));
+        const modelGraph = $('.plotly-graph-div', cards[2]);
+        if (modelGraph) drawModelBars(modelGraph);
+        const types = ['usage', 'cost', null, 'provider'];
+        for (const [index, type] of types.entries()) {
+          if (!type) continue;
+          const graph = $('.plotly-graph-div', cards[index]);
+          if (graph) try { await themeGraph(graph, type); } catch (e) { console.warn('Ajuste do gráfico:', e); }
+        }
+      }
+      window.addEventListener('load', initialise);
+    })();
+  </script>
+</body>
+</html>
