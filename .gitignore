@@ -1,0 +1,12 @@
+# Ambiente virtual
+.venv/
+venv/
+
+# Cache do Python
+__pycache__/
+*.pyc
+
+# Credenciais
+.env
+.env.*
+!.env.example
