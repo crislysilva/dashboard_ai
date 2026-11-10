@@ -1,4 +1,8 @@
-"""TokenScope: painel local de um único projeto baseado no export do OpenRouter."""
+"""TokenScope: painel local de análise do CSV de atividade do OpenRouter.
+
+O módulo carrega e normaliza os dados locais, aplica os filtros da página,
+calcula métricas e gráficos e entrega os resultados ao template Jinja.
+"""
 import math
 from pathlib import Path
 
@@ -17,7 +21,17 @@ PLOT_BG = 'rgba(0,0,0,0)'
 
 
 def load_data():
-    """Lê export real do OpenRouter e prepara os tipos. Não depende de API."""
+    """Carrega o CSV local e prepara as colunas utilizadas pelo dashboard.
+
+    Verifica a presença do arquivo e das colunas obrigatórias, converte datas
+    e valores numéricos, substitui textos ausentes e cria as colunas derivadas
+    ``total_tokens`` e ``day``. Colunas numéricas opcionais ausentes são
+    preenchidas com zero. Não faz chamadas à API do OpenRouter.
+
+    Raises:
+        FileNotFoundError: se o CSV configurado não existir.
+        ValueError: se o CSV não contiver alguma coluna obrigatória.
+    """
     if not CSV_FILE.is_file():
         raise FileNotFoundError(f'CSV não encontrado: {CSV_FILE.name}')
     df = pd.read_csv(CSV_FILE, low_memory=False)
@@ -41,6 +55,11 @@ def load_data():
 
 
 def style_chart(fig, height=300, margin=None):
+    """Aplica o tema compartilhado aos gráficos e retorna seu fragmento HTML.
+
+    O Plotly.js não é incluído no fragmento: o template carrega a biblioteca
+    uma vez via CDN. ``height`` e ``margin`` permitem ajustes por gráfico.
+    """
     fig.update_layout(
         template='plotly_dark', height=height, autosize=True,
         paper_bgcolor=PLOT_BG, plot_bgcolor=PLOT_BG,
@@ -56,14 +75,22 @@ def style_chart(fig, height=300, margin=None):
 
 
 def fmt_int(value):
+    """Formata um valor inteiro com ponto como separador de milhar."""
     return f'{int(value):,}'.replace(',', '.')
 
 
 def fmt_usd(value):
+    """Formata um valor monetário em dólares com duas casas decimais."""
     return f'US$ {value:,.2f}'
 
 
 def filter_data(df, args):
+    """Aplica filtros de data, provedor e modelo aos registros.
+
+    A data inicial e a final são inclusivas no calendário; a implementação
+    trata o limite final como o início do dia seguinte. Datas inválidas são
+    ignoradas. Retorna o DataFrame filtrado e os valores usados pelo formulário.
+    """
     start = args.get('start', '').strip()
     end = args.get('end', '').strip()
     provider = args.get('provider', '').strip()
@@ -88,6 +115,12 @@ def filter_data(df, args):
 
 
 def build_charts(df):
+    """Gera os gráficos de uso diário, custo, modelos e provedores.
+
+    O gráfico de modelos mostra até sete modelos por tokens totais e o de
+    provedores até seis provedores. Cada valor de ``total_tokens`` soma tokens
+    de entrada e saída, sem somar novamente cache ou raciocínio.
+    """
     daily = df.groupby('day', as_index=False)[['tokens_prompt', 'tokens_completion', 'cost_total']].sum().sort_values('day')
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=daily['day'], y=daily['tokens_prompt'], name='Entrada',
@@ -127,6 +160,13 @@ def build_charts(df):
 
 @app.get('/')
 def index():
+    """Renderiza o dashboard com filtros, indicadores, gráficos e histórico.
+
+    Lê o CSV a cada requisição, calcula opções de filtro sobre os dados
+    completos e aplica os filtros recebidos por query string. O histórico é
+    ordenado do mais recente para o mais antigo e paginado em grupos de 15.
+    Quando o CSV está ausente ou inválido, exibe a mensagem de erro com HTTP 500.
+    """
     try:
         raw = load_data()
     except (FileNotFoundError, ValueError, pd.errors.ParserError) as exc:
@@ -183,6 +223,7 @@ def index():
 
 @app.get('/health')
 def health():
+    """Retorna uma confirmação simples de que a aplicação Flask está ativa."""
     return jsonify(status='ok', source='csv', project=PROJECT_NAME)
 
 
