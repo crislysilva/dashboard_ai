@@ -1,92 +1,1068 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
 :root{--bg:#f7f8fc;--paper:#fff;--paper-soft:#fafbff;--line:#e8eaf2;--text:#242a40;--muted:#8490a5;--purple:#7768dc;--purple-dark:#6355c6;--purple-soft:#f1effe;--mint:#3bb7a9;--mint-soft:#eaf9f5;--shadow:0 3px 15px rgba(34,38,76,.025),0 12px 40px rgba(34,38,76,.025)}
+
 *{box-sizing:border-box}
+
 html{scroll-behavior:smooth}
+
 body{margin:0;min-height:100vh;display:flex;background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
+
 a{color:inherit}
+
 .sidebar{width:244px;flex-shrink:0;position:fixed;inset:0 auto 0 0;background:var(--paper);border-right:1px solid var(--line);padding:31px 18px;z-index:10;display:flex;flex-direction:column}
+
 .brand{display:flex;gap:11px;align-items:center;padding:0 7px;font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;letter-spacing:-.5px}
+
 .brand-icon{height:39px;width:39px;border-radius:13px;background:linear-gradient(140deg,#8a7de5,#6f5fcf);color:#fff;display:grid;place-items:center;font-size:24px;box-shadow:0 5px 16px rgba(119,104,220,.22)}
+
 .brand b{font-weight:800}.brand small{display:block;font-family:'DM Sans',sans-serif;font-size:9px;color:#9b9caf;letter-spacing:2.2px;font-weight:800;margin-top:5px}
+
 .side-label,.eyebrow{font-size:10px;font-weight:800;letter-spacing:1.8px;color:#9da7b9}
+
 .side-label{margin:46px 13px 12px}
+
 .nav,.project-link{display:block;padding:13px 14px;border-radius:12px;margin:3px 0;color:#69758d;font-size:12px;font-weight:700;text-decoration:none;transition:background .2s ease,color .2s ease}
+
 .nav:hover{background:#f7f6fd;color:var(--purple)}
+
 .nav.active,.project-link.chosen{background:var(--purple-soft);color:var(--purple)}
+
 .project-link{cursor:default}
+
 .side-note{margin-top:auto;border-top:1px solid var(--line);padding:21px 8px 2px;color:#9aa5b5;font-size:11px;line-height:1.8}
+
 .main{margin-left:244px;width:calc(100% - 244px);padding:43px clamp(20px,4vw,76px) 26px;max-width:1900px}
+
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:30px}
+
 .topbar h1{font:800 clamp(26px,2.6vw,36px) 'Plus Jakarta Sans',sans-serif;letter-spacing:-1.5px;margin:10px 0 9px;color:#22283d}
+
 .topbar p,.data-panel p,.chart-card p,.table-header p{color:var(--muted);font-size:12px;margin:0;line-height:1.7}
+
 .topbar .eyebrow{color:#8c83cb}
+
 .status{display:inline-flex;gap:9px;align-items:center;white-space:nowrap;border:1px solid #d5f2e8;background:var(--mint-soft);border-radius:99px;color:#258d7d;font-size:11px;font-weight:800;padding:11px 15px}
+
 .status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#35bba3;box-shadow:0 0 0 4px rgba(53,187,163,.12)}
+
 .data-panel,.filters,.metric,.secondary-metrics>div,.chart-card,.table-card,.empty{background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+
 .data-panel{display:flex;align-items:center;gap:20px;padding:25px 27px;margin-bottom:19px;background:linear-gradient(115deg,#ffffff 40%,#fbfaff 100%);border-color:#e7e6f4}
+
 .data-icon{height:52px;width:52px;border-radius:15px;display:grid;place-items:center;color:var(--purple);background:#f1effe;font-size:29px;flex-shrink:0}
+
 .data-information{flex:1;min-width:0}
+
 .data-panel h2{font:800 21px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.65px;margin:8px 0 7px}
+
 .data-panel .soft{color:var(--purple);font-weight:600}
+
 .data-panel .sep{padding:0 3px;color:#bbc2cf}
+
 .source-label{color:var(--purple);border:1px solid #e3defb;background:#f7f5ff;border-radius:9px;padding:9px 13px;font-weight:800;font-size:10px;white-space:nowrap;letter-spacing:.5px}
+
 .filters{padding:22px 23px;display:flex;align-items:center;justify-content:space-between;gap:23px;margin-bottom:20px}
+
 .filters h2,.table-card h2,.empty h2{font:800 16px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.4px;margin:5px 0}
+
 .filter-form{display:flex;align-items:end;justify-content:flex-end;flex-wrap:wrap;gap:11px}
+
 .filter-form label{display:grid;gap:7px;font-size:11px;color:#8390a6;font-weight:700}
+
 .filter-form input,.filter-form select{height:41px;min-width:0;max-width:180px;background:#fff;border:1px solid #e2e7f0;border-radius:10px;padding:0 12px;color:#49536b;outline:none;font:600 11px 'DM Sans',sans-serif;transition:border-color .2s,box-shadow .2s}
+
 .filter-form input:focus,.filter-form select:focus{border-color:#a79be8;box-shadow:0 0 0 3px rgba(119,104,220,.1)}
+
 .filter-form input[type=date]{width:135px}.filter-form select{width:155px;text-overflow:ellipsis}
+
 .filter-form button{height:41px;background:var(--purple);color:#fff;border:1px solid var(--purple);padding:0 17px;border-radius:10px;font:800 11px 'DM Sans',sans-serif;cursor:pointer;box-shadow:0 4px 12px rgba(119,104,220,.15);transition:.2s}
+
 .filter-form button:hover{background:var(--purple-dark);transform:translateY(-1px)}
+
 .clear-filters{color:#9185d0;font-size:11px;font-weight:800;text-decoration:none;padding:12px 5px}.clear-filters:hover{text-decoration:underline}
+
 .metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:15px}
+
 .metric{padding:20px 19px;min-width:0;position:relative;transition:transform .2s ease,box-shadow .2s ease}
+
 .metric:hover,.chart-card:hover{transform:translateY(-2px);box-shadow:0 13px 36px rgba(67,61,114,.075)}
+
 .metric-top{display:flex;align-items:center;justify-content:space-between;gap:6px}.metric-top span,.metric small{display:block;color:#8995aa;font-size:11px;font-weight:600}
+
 .metric-top i{display:grid;place-items:center;font:normal 17px 'DM Sans';background:#f3f1ff;color:var(--purple);width:29px;height:29px;border-radius:9px;flex-shrink:0}
+
 .metric:nth-child(2) .metric-top i{background:#edf9f5;color:#32a894}.metric:nth-child(3) .metric-top i{background:#fff4ea;color:#dd9a58}.metric:nth-child(4) .metric-top i{background:#fff0f5;color:#d17c9b}.metric:nth-child(5) .metric-top i{background:#edf4ff;color:#6e9bcc}
+
 .metric strong{display:block;font:800 clamp(19px,1.8vw,28px) 'Plus Jakarta Sans',sans-serif;letter-spacing:-1px;color:#262d46;margin:14px 0 10px;overflow-wrap:anywhere}
+
 .metric small{font-size:10px;color:#a7afbd}.metric-primary{border-color:#dad5fa;background:linear-gradient(140deg,#fff,#fcfbff)}
+
 .secondary-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}
+
 .secondary-metrics>div{padding:18px 20px;background:#fff}
+
 .secondary-metrics span{color:#8995aa;font-weight:600;font-size:11px}.secondary-metrics b{display:block;margin-top:10px;color:#3c435d;font:800 20px 'Plus Jakarta Sans',sans-serif;overflow-wrap:anywhere;letter-spacing:-.5px}
+
 .charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+
 .chart-card{min-width:0;overflow:hidden;padding:23px 23px 12px;transition:transform .2s,box-shadow .2s}
+
 .chart-card h2{font:800 15px 'Plus Jakarta Sans',sans-serif;letter-spacing:-.3px;margin:0 0 5px}
+
 .chart-card .plotly-graph-div{width:100%!important}.chart-card .js-plotly-plot{min-width:0}
+
 .table-card{margin-top:19px;padding:25px 24px}
+
 .table-header{display:flex;align-items:center;justify-content:space-between;gap:18px}
+
 .table-wrap{overflow:auto;margin-top:21px;border:1px solid var(--line);border-radius:12px}
+
 table{border-collapse:collapse;width:100%;white-space:nowrap;font-size:11px}
+
 th,td{padding:14px 16px;text-align:left;border-bottom:1px solid #f0f1f6}
+
 th{background:#fafbfe;color:#929eb1;font-weight:800;letter-spacing:.15px}
+
 td{color:#5b667e;font-weight:600}tbody tr:hover{background:#faf9ff}tbody tr:last-child td{border-bottom:none}
+
 .pagination{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:19px;font-size:11px;color:#8993a6}
+
 .pagination a{text-decoration:none;color:var(--purple);border:1px solid #e7e2ff;border-radius:9px;padding:10px 14px;background:#faf9ff;font-weight:800}.pagination a:hover{background:var(--purple-soft)}
+
 .empty{padding:65px 30px;text-align:center}.empty p{color:var(--muted)}.empty .clear-filters{display:inline-block}
+
 footer{font-size:10px;text-align:center;color:#a8b0be;margin:37px 0 2px}
+
 @media(max-width:1450px){.filters{align-items:flex-start;flex-direction:column}.filter-form{justify-content:flex-start;width:100%}}
+
 @media(max-width:1180px){.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.secondary-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 @media(max-width:960px){.sidebar{width:202px}.main{margin-left:202px;width:calc(100% - 202px);padding:30px 24px}.charts{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 @media(max-width:690px){body{display:block}.sidebar{width:100%;height:auto;inset:auto;position:relative;flex-direction:row;align-items:center;flex-wrap:wrap;gap:9px;padding:15px 18px;border-right:none;border-bottom:1px solid var(--line)}.brand{margin-right:auto}.sidebar .side-label,.sidebar .side-note{display:none}.sidebar .nav,.sidebar .project-link{margin:0;padding:10px 11px}.main{margin:0;width:100%;padding:25px 15px}.topbar{align-items:flex-start;flex-direction:column;gap:14px}.topbar h1{font-size:27px}.data-panel{padding:19px;flex-wrap:wrap;gap:12px}.data-icon{width:43px;height:43px}.data-panel h2{font-size:17px}.data-panel .source-label{margin-left:55px}.filters{padding:19px}.filter-form label{flex:1 1 135px}.filter-form input[type=date],.filter-form select{width:100%;max-width:none}.metrics{gap:10px}.metric{padding:16px 13px}.metric strong{font-size:19px}.metric-top span{font-size:10px}.metric-top i{width:25px;height:25px;font-size:14px}.secondary-metrics{gap:10px}.secondary-metrics>div{padding:16px 13px}.secondary-metrics b{font-size:16px}.chart-card{padding:18px 13px 9px}.table-card{padding:19px 13px}.table-header{align-items:flex-start;flex-direction:column}.pagination{flex-wrap:wrap}}
+
 @media(max-width:360px){.metrics,.secondary-metrics{grid-template-columns:1fr}.filter-form button{flex:1}}
 
+/* Melhorias TokenScope: gráficos adaptativos e filtros opcionais */
 
-/* Gráficos: altura estável, sem vazamento para outros cartões */
-.chart-card{overflow:hidden;display:flex;flex-direction:column;min-width:0;padding-bottom:20px}
-.chart-card .plotly-graph-div{width:100%!important;max-width:100%!important}
-.chart-card .js-plotly-plot{min-width:0;max-width:100%}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
+
+.charts>.chart-card{min-width:0;min-height:385px;padding:24px 23px 17px;overflow:hidden}
+
+.charts>.chart-card-models,.charts>.chart-card-cost-model,.charts>.chart-card-requests{grid-column:1/-1}
+
+.charts>.chart-card-cost,.charts>.chart-card-provider{grid-column:auto}
+
+.chart-card .plotly-graph-div,.chart-card .js-plotly-plot{width:100%!important;max-width:100%!important}
+
 .chart-card .svg-container{max-width:100%}
-.chart-card:not(.chart-card-models) .js-plotly-plot{height:315px!important;margin-top:10px}
-.chart-card:not(.chart-card-models) .plotly-graph-div{height:315px!important}
-.chart-card-models .models-visual{margin-top:22px;width:100%}
-.chart-card-models .models-visual>.js-plotly-plot{display:none!important}
-.token-bars{display:grid;gap:19px;width:100%;padding:2px 0 5px}
-.token-bar-item{min-width:0}
-.token-bar-heading{display:flex;gap:10px;justify-content:space-between;align-items:baseline;margin-bottom:8px}
-.token-model-name{color:#48516b;font-size:12px;font-weight:700;overflow-wrap:anywhere;min-width:0}
-.token-model-value{font-size:11px;color:#7567d4;white-space:nowrap;font-variant-numeric:tabular-nums}
-.token-bar-track{height:13px;background:#efedf9;border-radius:99px;overflow:hidden}
-.token-bar-fill{height:100%;background:linear-gradient(90deg,#9184ed,#7666db);border-radius:99px;min-width:2px}
-@media(max-width:690px){.token-bar-heading{flex-direction:column;gap:3px}.chart-card:not(.chart-card-models) .js-plotly-plot,.chart-card:not(.chart-card-models) .plotly-graph-div{height:315px!important}}
+
+.chart-card p{margin-top:6px}
+
+#models-visual{min-height:240px;margin-top:22px}
+
+#models-visual .js-plotly-plot{display:block;min-height:325px}
+
+.token-bars{display:grid;gap:16px;padding:2px 1px 10px}
+
+.token-bar-heading{display:flex;justify-content:space-between;align-items:baseline;gap:15px;margin-bottom:8px}
+
+.token-model-name{font-size:12px;color:#48516b;font-weight:700;overflow-wrap:anywhere}
+
+.token-model-value{font-size:12px;color:#7364d4;font-weight:800;white-space:nowrap}
+
+.token-bar-track{height:12px;background:#f0eefc;border-radius:999px;overflow:hidden}
+
+.token-bar-fill{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#a296f2,#7463d9);min-width:2px}
+
+.filter-form input[type=date]{width:155px;max-width:100%;font-size:12px}
+
+.clear-filters{display:inline-flex;align-items:center;height:41px;padding:0 12px;background:#f7f5ff;border-radius:10px}
+
+.clear-filters:hover{background:#efebff;text-decoration:none}
+
+.api-note{margin-top:10px;font-size:12px;color:#65728a;line-height:1.6}
+
+.metric .unavailable{font-size:clamp(13px,1.4vw,17px);white-space:normal;overflow-wrap:anywhere}
+
+.table-card .table-wrap{overflow-x:auto}
+
+.table-card table{min-width:790px}
+
+@media(max-width:960px){.charts{grid-template-columns:minmax(0,1fr)}.charts>.chart-card{grid-column:auto!important}}
+
+@media(max-width:690px){.charts>.chart-card{padding:19px 12px 16px;min-height:350px}.token-bar-heading{flex-wrap:wrap}.filter-form input[type=date]{width:100%}}
+
+/* Gráfico de modelos: Plotly nativo sempre visível, sem conversão JS. */
+
+#models-visual .plotly-graph-div{display:block!important;min-height:325px}
+
+#models-visual .svg-container{width:100%!important}
+
+/* Seleção de projeto com tamanho adaptável */
+
+.filter-form select[name="project"] { min-width: 180px; max-width: 230px; }
+
+@media (max-width: 690px) { .filter-form select[name="project"] { width: 100%; max-width: none; } }
+
+/* Comparação de projetos */
+
+.scope-warning{margin:0 0 19px;padding:15px 19px;background:#fff8ea;border:1px solid #f1dfb9;color:#80601e;border-radius:14px;font-size:12px;line-height:1.65}
+
+.comparison-section{margin:8px 0 24px}
+
+.comparison-heading{margin-bottom:15px}.comparison-heading h2{font:800 22px 'Plus Jakarta Sans',sans-serif;margin:7px 0}.comparison-heading p{color:#8490a5;font-size:12px;line-height:1.6}
+
+.comparison-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:14px 0 17px}
+
+.comparison-summary{border:1px solid var(--line);border-radius:16px;background:#fff;padding:18px 21px;display:flex;flex-direction:column;gap:9px;box-shadow:var(--shadow)}
+
+.comparison-summary h3{margin:0 0 4px;font:800 15px 'Plus Jakarta Sans',sans-serif}.comparison-summary span{font-size:12px;color:#6a768e}.comparison-summary strong{color:#30394e}
+
+.comparison-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.comparison-charts>.chart-card{min-width:0;padding:22px 20px 16px}
+
+.comparison-charts>.chart-card:last-child{grid-column:1 / -1}
+
+@media(max-width:960px){.comparison-charts{grid-template-columns:minmax(0,1fr)}.comparison-charts>.chart-card:last-child{grid-column:auto}}
+
+@media(max-width:580px){.comparison-cards{grid-template-columns:1fr}}
+
+/* Navegação de projetos sempre visível e clicável. */
+
+.sidebar .project-link { cursor: pointer; }
+
+.sidebar .project-link:hover { background: #f7f6fd; color: var(--purple); }
+
+/* Versão apresentação: filtros compactos e sem quebras desconexas. */
+
+.filters{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:14px 22px;align-items:center}
+
+.filters>.api-note{grid-column:1/-1;margin-top:0;padding:10px 14px;background:#faf9ff;border:1px solid #eeeafb;border-radius:10px}
+
+.filter-form{display:flex;justify-content:flex-start;align-items:flex-end;flex-wrap:wrap;gap:10px}
+
+.filter-form label{display:flex;flex-direction:column;gap:7px;flex:0 1 auto;min-width:135px}
+
+.filter-form input[type=date]{width:160px;max-width:100%}
+
+.filter-form select[name="month"]{min-width:190px;max-width:230px}
+
+.filter-form button,.filter-form .clear-filters{white-space:nowrap}
+
+.comparison-charts>.chart-card-comparison-evolution{grid-column:1/-1}
+
+.comparison-charts>.chart-card:last-child{grid-column:1/-1}
+
+.chart-card-comparison-evolution .plotly-graph-div{width:100%!important}
+
+@media(max-width:1450px){.filters{grid-template-columns:1fr}.filter-form{width:100%}}
+
+@media(max-width:740px){.filter-form label{flex:1 1 150px}.filter-form select[name="month"],.filter-form select[name="project"],.filter-form input[type=date]{width:100%;max-width:none}.comparison-charts>.chart-card-comparison-evolution{grid-column:auto}}
+
+/* TokenScope: comparação de projetos destacada na apresentação */
+
+.comparison-section{background:linear-gradient(145deg,#f5f3ff,#f2fbf9 72%,#fff);border:1px solid #e3def9;border-radius:22px;padding:24px;margin:8px 0 28px}
+
+.comparison-heading h2{font-size:25px;letter-spacing:-.8px}
+
+.comparison-intro{color:#65728a;line-height:1.6;font-size:12px;margin:4px 0 18px}
+
+.comparison-cards{gap:16px}
+
+.comparison-summary{padding:23px;border-radius:18px;border-top:4px solid #7868df;gap:13px;box-shadow:0 10px 24px rgba(43,39,85,.045)}
+
+.comparison-summary-two{border-top-color:#30b1a6}
+
+.comparison-project-title{display:flex;align-items:center;gap:9px}
+
+.comparison-dot{background:#7868df;width:12px;height:12px;border-radius:50%;display:inline-block}
+
+.comparison-summary-two .comparison-dot{background:#30b1a6}
+
+.comparison-cost{font:800 clamp(24px,2.4vw,34px) 'Plus Jakarta Sans',sans-serif;color:#282f48;letter-spacing:-1px}
+
+.comparison-track{height:12px;background:#efedf8;border-radius:999px;overflow:hidden;margin:2px 0}
+
+.comparison-track span{display:block;height:100%;background:#7868df;border-radius:999px;min-width:0}
+
+.comparison-summary-two .comparison-track span{background:#30b1a6}
+
+.comparison-stats{display:flex;gap:15px;flex-wrap:wrap;justify-content:space-between;border-top:1px solid #edf0f6;padding-top:13px}
+
+.comparison-stats span{display:grid;gap:5px;color:#7b879d}
+
+.comparison-stats strong{color:#283149;font-size:14px}
+
+.metric-footnote{display:block;font-size:10px;color:#97a1b4;margin-top:7px;line-height:1.5}
+
+.metric-hint{font-size:10px;color:#a5adbf;font-weight:500}
+
+@media(max-width:690px){.comparison-section{padding:16px}.comparison-cards{grid-template-columns:1fr}}
+
+/* Edição comparativa: Two roxo, Instant Doctor verde em todos os painéis. */
+
+:root{--two:#7768dc;--doctor:#26aa9d}
+
+.metric strong{overflow-wrap:normal;word-break:normal;white-space:nowrap;font-size:clamp(16px,1.55vw,27px);letter-spacing:-.9px;font-variant-numeric:tabular-nums}
+
+.metric{overflow:hidden}
+
+.metric-primary strong{font-size:clamp(15px,1.55vw,27px)}
+
+@media(max-width:1250px){.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.metric strong{font-size:clamp(18px,2.1vw,27px)}}
+
+@media(max-width:750px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.metric strong{font-size:clamp(15px,3vw,24px)}}
+
+@media(max-width:400px){.metrics{grid-template-columns:1fr}.metric strong{font-size:25px}}
+
+.project-legend{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 19px}
+
+.project-legend span{display:inline-flex;align-items:center;gap:7px;border:1px solid #e5e8f2;background:white;border-radius:99px;padding:9px 13px;font-size:12px;color:#637087}
+
+.project-legend strong{color:#29324b}
+
+.legend-dot{display:inline-block;width:11px;height:11px;border-radius:50%}
+
+.legend-dot.legend-two{background:var(--two)}
+
+.legend-dot.legend-doctor{background:var(--doctor)}
+
+.comparison-summary-doctor{border-top-color:var(--doctor)}
+
+.comparison-summary-two{border-top-color:var(--two)}
+
+.comparison-summary-doctor .comparison-dot{background:var(--doctor)}
+
+.comparison-summary-two .comparison-dot{background:var(--two)}
+
+.comparison-track{height:13px}
+
+.comparison-progress{appearance:none;-webkit-appearance:none;display:block;width:100%;height:13px;border:0;border-radius:99px;overflow:hidden;background:#efedf8}
+
+.comparison-progress::-webkit-progress-bar{background:#efedf8;border-radius:99px}
+
+.comparison-progress::-webkit-progress-value{background:var(--doctor);border-radius:99px}
+
+.comparison-progress::-moz-progress-bar{background:var(--doctor);border-radius:99px}
+
+.comparison-summary-two .comparison-progress::-webkit-progress-value{background:var(--two)}
+
+.comparison-summary-two .comparison-progress::-moz-progress-bar{background:var(--two)}
+
+.comparison-charts>.chart-card{min-height:390px;display:flex;flex-direction:column}
+
+.comparison-charts>.chart-card .js-plotly-plot{margin:auto 0}
+
+.comparison-charts>.chart-card:nth-child(4){grid-column:1/-1;max-width:100%;}
+
+.charts>.chart-card-models,.charts>.chart-card-cost-model,.charts>.chart-card-requests{grid-column:1/-1}
+
+.chart-card h2{line-height:1.4}
+
+@media(max-width:960px){.comparison-charts>.chart-card:nth-child(4){grid-column:auto}}
+
+/* Melhorias: ajuda de zoom, modelos compartilhados e séries com poucos pontos */
+
+.chart-help{font-size:12px;color:#77849c;line-height:1.65;margin:14px 0 12px}
+
+.chart-card-shared-models{grid-column:1/-1;min-height:unset!important}
+
+.chart-empty-note,.comparison-note{font-size:12px;line-height:1.75;color:#64728a;background:#f7f9fd;border:1px solid #e8ebf5;border-radius:12px;padding:14px 17px;margin:12px 0 18px}
+
+.comparison-note{background:#f0faf7;border-color:#ccebe4;color:#377e73}
+
+.chart-card .modebar-container{z-index:3!important}
+
+.chart-card .modebar{background:rgba(255,255,255,.96)!important;border:1px solid #eeeefa!important;border-radius:10px;padding:3px!important;box-shadow:0 4px 14px rgba(30,35,70,.06)!important}
+
+.chart-card .modebar-btn:hover{background:#f2efff!important}
+
+@media(max-width:960px){.chart-card-shared-models{grid-column:auto}}
+
+/* Fracta: terceiro projeto e comparação de três fontes */
+
+:root { --fracta: #3785E8; --fracta-light: #EAF3FF; }
+
+.project-link-fracta.chosen { color: #2774ce; background: var(--fracta-light); }
+
+.project-link-fracta:hover { color: #2774ce!important; background: var(--fracta-light)!important; }
+
+.legend-dot.legend-fracta { background: var(--fracta); }
+
+.comparison-cards { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+
+.comparison-summary-fracta { border-top-color: var(--fracta); }
+
+.comparison-summary-fracta .comparison-dot { background: var(--fracta); }
+
+.comparison-summary-fracta .comparison-progress::-webkit-progress-value { background: var(--fracta); }
+
+.comparison-summary-fracta .comparison-progress::-moz-progress-bar { background: var(--fracta); }
+
+.comparison-summary-fracta .comparison-track span { background: var(--fracta); }
+
+.comparison-summary { min-width:0; }
+
+.comparison-summary .comparison-cost { font-size:clamp(19px,2vw,31px); white-space:nowrap; }
+
+.comparison-stats strong { overflow-wrap:anywhere; }
+
+@media (max-width:1280px) { .comparison-cards { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+
+@media (max-width:740px) { .comparison-cards { grid-template-columns: minmax(0,1fr); } }
+
+/* TokenScope: comparativo diário dos 15 dias anteriores à data "Até". */
+
+.chart-card-last-15-days {
+
+  width: 100%;
+
+  max-width: 100%;
+
+  min-width: 0;
+
+  margin: 20px 0 18px;
+
+  padding: 25px 25px 16px;
+
+  background: #fff;
+
+}
+
+.chart-card-last-15-days .plotly-graph-div,
+
+.chart-card-last-15-days .js-plotly-plot {
+
+  width: 100% !important;
+
+  max-width: 100% !important;
+
+}
+
+.last-15-heading {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-start;
+
+  gap: 16px;
+
+  flex-wrap: wrap;
+
+}
+
+.last-15-heading h2 { font-size: 18px; margin-bottom: 7px; }
+
+.last-15-heading p { line-height: 1.7; }
+
+.last-15-period {
+
+  white-space: nowrap;
+
+  color: #6157bb;
+
+  border: 1px solid #e0dcfa;
+
+  background: #f5f3ff;
+
+  padding: 8px 13px;
+
+  border-radius: 9px;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+}
+
+@media (max-width: 690px) {
+
+  .chart-card-last-15-days { padding: 19px 12px 12px; }
+
+  .last-15-heading h2 { font-size: 16px; }
+
+}
+
+/* Instant Doctor — verde */
+
+.comparison-summary-instant_doctor {
+
+    border-top-color: #26AA9D;
+
+}
+
+.comparison-summary-instant_doctor .comparison-dot {
+
+    background-color: #26AA9D;
+
+}
+
+.comparison-summary-instant_doctor .comparison-progress {
+
+    accent-color: #26AA9D;
+
+}
+
+/* ============================================================ IDENTIDADE VISUAL POR PROJETO Cores aplicadas apenas na interface; gráficos mantêm suas cores. ============================================================ */
+
+body.theme-instant {
+
+    --project-accent: #26AA9D;
+
+    --project-accent-dark: #188b80;
+
+    --project-accent-soft: #e9f8f5;
+
+    --project-accent-border: #c6ebe4;
+
+    --project-accent-shadow: rgba(38,170,157,.14);
+
+}
+
+body.theme-two {
+
+    --project-accent: #7768DC;
+
+    --project-accent-dark: #6355c6;
+
+    --project-accent-soft: #f1effe;
+
+    --project-accent-border: #dad5fa;
+
+    --project-accent-shadow: rgba(119,104,220,.14);
+
+}
+
+body.theme-fracta {
+
+    --project-accent: #3785E8;
+
+    --project-accent-dark: #226fc9;
+
+    --project-accent-soft: #ecf4ff;
+
+    --project-accent-border: #cfe1fc;
+
+    --project-accent-shadow: rgba(55,133,232,.14);
+
+}
+
+body.theme-all {
+
+    --project-accent: #7768DC;
+
+    --project-accent-dark: #6355c6;
+
+    --project-accent-soft: #f1effe;
+
+    --project-accent-border: #dad5fa;
+
+    --project-accent-shadow: rgba(119,104,220,.13);
+
+}
+
+/* Cabeçalho e navegação distinguem a tela selecionada */
+
+body[class*="theme-"] .topbar .eyebrow { color: var(--project-accent); }
+
+body[class*="theme-"] .topbar h1 { border-left: 4px solid var(--project-accent); padding-left: 14px; }
+
+body[class*="theme-"] .sidebar .project-link.chosen {
+
+    background: var(--project-accent-soft);
+
+    color: var(--project-accent-dark);
+
+    box-shadow: inset 3px 0 0 var(--project-accent);
+
+}
+
+body[class*="theme-"] .sidebar .project-link.chosen:hover {
+
+    background: var(--project-accent-soft);
+
+    color: var(--project-accent-dark);
+
+}
+
+body[class*="theme-"] .filters:focus-within {
+
+    border-color: var(--project-accent-border);
+
+}
+
+body[class*="theme-"] .filter-form button {
+
+    background: var(--project-accent);
+
+    border-color: var(--project-accent);
+
+    box-shadow: 0 4px 12px var(--project-accent-shadow);
+
+}
+
+body[class*="theme-"] .filter-form button:hover {
+
+    background: var(--project-accent-dark);
+
+    border-color: var(--project-accent-dark);
+
+}
+
+body[class*="theme-"] .filter-form input:focus,
+
+body[class*="theme-"] .filter-form select:focus {
+
+    border-color: var(--project-accent);
+
+    box-shadow: 0 0 0 3px var(--project-accent-shadow);
+
+}
+
+body[class*="theme-"] .data-panel {
+
+    border-color: var(--project-accent-border);
+
+}
+
+body[class*="theme-"] .data-icon {
+
+    color: var(--project-accent);
+
+    background: var(--project-accent-soft);
+
+}
+
+body[class*="theme-"] .data-panel .soft {
+
+    color: var(--project-accent);
+
+}
+
+body[class*="theme-"] .source-label {
+
+    color: var(--project-accent-dark);
+
+    background: var(--project-accent-soft);
+
+    border-color: var(--project-accent-border);
+
+}
+
+body[class*="theme-"] .metric-primary {
+
+    border-color: var(--project-accent-border);
+
+    background: linear-gradient(135deg,#fff 45%,var(--project-accent-soft));
+
+}
+
+body[class*="theme-"] .metric-primary .metric-top i {
+
+    color: var(--project-accent);
+
+    background: var(--project-accent-soft);
+
+}
+
+/* Na visão geral, uma faixa discreta usa as três cores sem interferir nos gráficos. */
+
+body.theme-all .topbar h1 {
+
+    border-left: 0;
+
+    padding-left: 0;
+
+}
+
+body.theme-all .topbar::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: -13px;
+
+    left: 0;
+
+    width: 132px;
+
+    height: 4px;
+
+    border-radius: 10px;
+
+    background: linear-gradient(90deg,#26AA9D 0 33.33%,#7768DC 33.33% 66.66%,#3785E8 66.66%);
+
+}
+
+body.theme-all .topbar { position: relative; }
+
+/* Cartões comparativos sempre seguem as cores reais dos projetos. */
+
+body .comparison-summary-instant_doctor {
+
+    border-top-color: #26AA9D;
+
+}
+
+body .comparison-summary-instant_doctor .comparison-dot {
+
+    background: #26AA9D;
+
+}
+
+body .comparison-summary-instant_doctor .comparison-progress {
+
+    accent-color: #26AA9D;
+
+}
+
+body .comparison-summary-two {
+
+    border-top-color: #7768DC;
+
+}
+
+body .comparison-summary-two .comparison-dot {
+
+    background: #7768DC;
+
+}
+
+body .comparison-summary-two .comparison-progress {
+
+    accent-color: #7768DC;
+
+}
+
+body .comparison-summary-fracta {
+
+    border-top-color: #3785E8;
+
+}
+
+body .comparison-summary-fracta .comparison-dot {
+
+    background: #3785E8;
+
+}
+
+body .comparison-summary-fracta .comparison-progress {
+
+    accent-color: #3785E8;
+
+}
+
+@media (max-width: 690px) {
+
+    body[class*="theme-"] .topbar h1 { padding-left: 10px; }
+
+}
+
+/* ============================================================ TOKENScope — Barra lateral Lavanda Suave Apenas apresentação: o tema ativo continua sendo a cor do projeto. ============================================================ */
+
+body[class*="theme-"] .sidebar {
+
+    background: linear-gradient(180deg, #f0eeff 0%, #f6f4ff 56%, #faf9ff 100%);
+
+    border-right: 1px solid #ded9f5;
+
+    box-shadow: 5px 0 24px rgba(76, 61, 145, .035);
+
+}
+
+body[class*="theme-"] .sidebar .brand b { color: #373051; }
+
+body[class*="theme-"] .sidebar .brand small { color: #9a8bc5; }
+
+body[class*="theme-"] .sidebar .side-label { color: #9588bc; }
+
+body[class*="theme-"] .sidebar .nav,
+
+body[class*="theme-"] .sidebar .project-link {
+
+    color: #69617e;
+
+    transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
+
+}
+
+body[class*="theme-"] .sidebar .nav:hover,
+
+body[class*="theme-"] .sidebar .project-link:hover {
+
+    background: rgba(255,255,255,.75);
+
+    color: #5c4cab;
+
+}
+
+body[class*="theme-"] .sidebar .nav.active {
+
+    background: #fff;
+
+    color: #6555be;
+
+    box-shadow: 0 2px 10px rgba(83,68,154,.07);
+
+}
+
+/* Manter os destaques do projeto em verde, roxo ou azul. */
+
+body[class*="theme-"] .sidebar .project-link.chosen,
+
+body[class*="theme-"] .sidebar .project-link.chosen:hover {
+
+    background: #fff;
+
+    color: var(--project-accent-dark);
+
+    box-shadow: inset 3px 0 0 var(--project-accent), 0 3px 12px rgba(83,68,154,.065);
+
+}
+
+body[class*="theme-"] .sidebar .side-note {
+
+    border-top-color: #ded9f5;
+
+    color: #9087ad;
+
+}
+
+@media (max-width:690px) {
+
+    body[class*="theme-"] .sidebar { border-right: 0; border-bottom: 1px solid #ded9f5; }
+
+}
+
+/* ============================================================ TokenScope — Fundo lavanda claro e cartões suaves Preserva cores dos projetos, Plotly e layout responsivo. ============================================================ */
+
+:root {
+
+    --bg: #F0F1F9;
+
+    --paper: #FDFDFF;
+
+    --paper-soft: #F8F7FD;
+
+    --line: #E1E2F0;
+
+}
+
+body {
+
+    background: linear-gradient(145deg, #F1F0FA 0%, #EFF2FA 48%, #F4F1FA 100%);
+
+    background-attachment: fixed;
+
+}
+
+/* Superfícies discretamente lilases, mantendo contraste dos números. */
+
+.filters,
+
+.data-panel,
+
+.metric,
+
+.secondary-metrics > div,
+
+.table-card,
+
+.chart-card,
+
+.empty {
+
+    background-color: #FDFCFF;
+
+    border-color: #E3E2F1;
+
+    box-shadow: 0 5px 22px rgba(66, 60, 113, .035);
+
+}
+
+.filters {
+
+    background: linear-gradient(115deg, #FBFAFF, #F7F7FF);
+
+}
+
+.data-panel {
+
+    background: linear-gradient(115deg, #FDFBFF 40%, #F5F5FE 100%);
+
+}
+
+/* Gráficos mantêm uma superfície quase branca para clareza dos eixos. */
+
+.chart-card {
+
+    background: #FEFDFF;
+
+}
+
+/* A borda de destaque dos projetos continua controlada pelo tema. */
+
+body[class*="theme-"] .metric-primary {
+
+    background: linear-gradient(135deg, #FDFCFF 35%, var(--project-accent-soft));
+
+}
+
+@media (max-width: 690px) {
+
+    body { background-attachment: scroll; }
+
+}
+
+/* Cores dos projetos no título comparativo */
+
+.comparison-title .title-doctor {
+
+    color: #2d9086;
+
+}
+
+.comparison-title .title-two {
+
+    color: #7d70cf;
+
+}
+
+.comparison-title .title-fracta {
+
+    color: #347cda;
+
+}
+
+.comparison-title .title-separator {
+
+    color: #A5AEC0;
+
+    padding: 0 5px;
+
+}
+
+/* Autenticação PostgreSQL - conta e saída na navegação */
+.account-panel{margin-top:auto;display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:9px;padding:14px 7px 12px;border-top:1px solid #dedcf0;}
+.account-avatar{width:34px;height:34px;border-radius:11px;background:var(--accent,#7768dc);color:white;display:grid;place-items:center;font-weight:800;font-size:15px;}
+.account-info{min-width:0;}
+.account-info strong,.account-info small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.account-info strong{font-size:11px;color:#30364d;}.account-info small{font-size:10px;color:#7f8ba2;margin-top:2px;}
+.logout-form{grid-column:1/-1;margin:3px 0 0;}
+.logout-button{width:100%;cursor:pointer;border:1px solid #e1dff0;color:#625b8b;background:#ffffffb8;padding:9px 12px;border-radius:10px;font:700 12px 'DM Sans',sans-serif;display:flex;justify-content:space-between;align-items:center;}
+.logout-button:hover{background:#ece9fb;color:#4f47a0;}
+.sidebar .side-note{margin-top:0;padding-top:12px;}
+@media(max-width:690px){.account-panel{margin-top:0;grid-template-columns:30px minmax(80px,1fr);max-width:250px;}.logout-form{grid-column:1/-1;}}
+
+/* ==========================================================
+   TokenScope | Temas por projeto - restauração (nov/2026)
+   Altera apenas a apresentação. Não modifica gráficos Plotly.
+   ========================================================== */
+body.theme-instant {
+  --project-accent:#26AA9D;
+  --project-accent-dark:#188B80;
+  --project-accent-soft:#E9F8F5;
+  --project-accent-border:#BCE7DF;
+  --project-accent-shadow:rgba(38,170,157,.17);
+  --project-page:#EAF8F5;
+  --project-page-light:#F5FBF9;
+}
+body.theme-two {
+  --project-accent:#7768DC;
+  --project-accent-dark:#6355C6;
+  --project-accent-soft:#F1EFFE;
+  --project-accent-border:#DAD5FA;
+  --project-accent-shadow:rgba(119,104,220,.17);
+  --project-page:#F1EEFE;
+  --project-page-light:#FAF8FF;
+}
+body.theme-fracta {
+  --project-accent:#3785E8;
+  --project-accent-dark:#226FC9;
+  --project-accent-soft:#EAF3FF;
+  --project-accent-border:#C9E0FE;
+  --project-accent-shadow:rgba(55,133,232,.17);
+  --project-page:#EAF3FF;
+  --project-page-light:#F5FAFF;
+}
+body.theme-all {
+  --project-accent:#356B78;
+  --project-accent-dark:#28525D;
+  --project-accent-soft:#E7F1F3;
+  --project-accent-border:#C8E1E5;
+  --project-accent-shadow:rgba(53,107,120,.15);
+  --project-page:#F0F1F9;
+  --project-page-light:#F8F7FD;
+}
+body.theme-instant,
+body.theme-two,
+body.theme-fracta,
+body.theme-all {
+  background:linear-gradient(145deg,var(--project-page) 0%,var(--project-page-light) 65%,#fff 100%);
+  background-attachment:fixed;
+}
+body[class*="theme-"] .sidebar .brand-icon {
+  background:linear-gradient(140deg,var(--project-accent),var(--project-accent-dark));
+  box-shadow:0 5px 16px var(--project-accent-shadow);
+}
+body[class*="theme-"] .sidebar .project-link.chosen,
+body[class*="theme-"] .sidebar .project-link.chosen:hover {
+  color:var(--project-accent-dark);
+  background:var(--project-accent-soft);
+  box-shadow:inset 4px 0 0 var(--project-accent);
+}
+body[class*="theme-"] .topbar .eyebrow,
+body[class*="theme-"] .data-panel .soft {
+  color:var(--project-accent);
+}
+body[class*="theme-"] .topbar h1 {
+  border-left:4px solid var(--project-accent);
+  padding-left:14px;
+}
+body.theme-all .topbar h1 { border-left:0; padding-left:0; }
+body[class*="theme-"] .filters {
+  background:linear-gradient(115deg,#fff 30%,var(--project-accent-soft) 160%);
+  border-color:var(--project-accent-border);
+}
+body[class*="theme-"] .data-panel {
+  background:linear-gradient(115deg,#fff 35%,var(--project-accent-soft) 125%);
+  border-color:var(--project-accent-border);
+}
+body[class*="theme-"] .filter-form button {
+  background:var(--project-accent);
+  border-color:var(--project-accent);
+  box-shadow:0 4px 12px var(--project-accent-shadow);
+}
+body[class*="theme-"] .filter-form button:hover {
+  background:var(--project-accent-dark);
+  border-color:var(--project-accent-dark);
+}
+body[class*="theme-"] .filter-form input:focus,
+body[class*="theme-"] .filter-form select:focus {
+  border-color:var(--project-accent);
+  box-shadow:0 0 0 3px var(--project-accent-shadow);
+}
+body[class*="theme-"] .data-icon,
+body[class*="theme-"] .metric-primary .metric-top i {
+  color:var(--project-accent);
+  background:var(--project-accent-soft);
+}
+body[class*="theme-"] .metric-primary {
+  border-color:var(--project-accent-border);
+  background:linear-gradient(135deg,#fff 30%,var(--project-accent-soft));
+}
+body[class*="theme-"] .source-label {
+  color:var(--project-accent-dark);
+  background:var(--project-accent-soft);
+  border-color:var(--project-accent-border);
+}
+body[class*="theme-"] .account-avatar { background:var(--project-accent); }
+@media(max-width:690px){
+  body.theme-instant,body.theme-two,body.theme-fracta,body.theme-all {
+    background-attachment:scroll;
+  }
+}

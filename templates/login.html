@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Entrar | TokenScope</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='auth.css') }}">
+</head>
+<body class="auth-page">
+  <main class="auth-card">
+    <div class="auth-brand"><div class="brand-mark">✳</div><div><strong>TokenScope</strong><span>AI ANALYTICS</span></div></div>
+    <div class="auth-heading"><span class="eyebrow">ACESSO RESTRITO</span><h1>Bem-vindo de volta</h1><p>Entre para visualizar os projetos e indicadores de IA.</p></div>
+    {% with messages=get_flashed_messages(with_categories=true) %}{% for kind,message in messages %}<div class="flash {{ kind }}" role="alert">{{ message }}</div>{% endfor %}{% endwith %}
+    <form method="post" class="auth-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="email">E-mail</label><input id="email" type="email" name="email" autocomplete="username" maxlength="254" placeholder="seu@email.com" required autofocus>
+      <label for="password">Senha</label><input id="password" type="password" name="password" autocomplete="current-password" required>
+      <button type="submit">Entrar no dashboard</button>
+    </form>
+    <p class="auth-foot">Acesso autorizado pela administração. Solicite suas credenciais ao responsável.</p>
+  </main>
+</body></html>

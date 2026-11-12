@@ -1,12 +1,25 @@
-# Ambiente virtual
+# Ambientes virtuais
 .venv/
 venv/
+env/
 
-# Cache do Python
+# Cache e arquivos gerados pelo Python
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
 
-# Credenciais
+# Chaves e configurações privadas
 .env
 .env.*
 !.env.example
+
+# IDE e arquivos locais
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+
+*.py[cod]
+instance/
+*.db

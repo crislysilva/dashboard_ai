@@ -10,58 +10,15 @@
 
   <meta name="theme-color" content="#f7f8fc">
 
-  <title>TokenScope | Projeto 1</title>
+  <title>TokenScope | Projetos</title>
 
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
-
-  <style>
-    /* Layout dos três gráficos: modelos grande, custos e provedores abaixo. */
-    .charts {
-      display: grid !important;
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      align-items: stretch;
-      gap: 22px !important;
-    }
-    .charts > .chart-card { min-width: 0; box-sizing: border-box; }
-    .charts > .chart-card-models { grid-column: 1 / -1 !important; }
-    .charts > .chart-card-cost, .charts > .chart-card-provider { grid-column: auto !important; }
-    #models-visual { width: 100%; margin-top: 24px; min-height: 360px; }
-    #models-visual .token-bars {
-      display: flex; flex-direction: column; gap: 18px; width: 100%;
-    }
-    #models-visual .token-bar-item { display: grid; gap: 9px; min-width: 0; }
-    #models-visual .token-bar-heading {
-      display: flex; gap: 16px; align-items: baseline; justify-content: space-between;
-      min-width: 0; flex-wrap: wrap;
-    }
-    #models-visual .token-model-name {
-      color: #26314c; font-weight: 600; font-size: 13px;
-      overflow-wrap: anywhere; white-space: normal; min-width: 0;
-    }
-    #models-visual .token-model-value {
-      color: #6b61c9; font-size: 13px; white-space: nowrap; font-weight: 700;
-    }
-    #models-visual .token-bar-track {
-      width: 100%; height: 17px; background: #f0eefc;
-      border-radius: 999px; overflow: hidden;
-    }
-    #models-visual .token-bar-fill {
-      height: 100%; min-width: 2px; border-radius: 999px;
-      background: linear-gradient(90deg, #8e7ff0, #6958d3);
-    }
-    .charts > .chart-card-cost .plotly-graph-div,
-    .charts > .chart-card-provider .plotly-graph-div { max-width: 100%; }
-    @media (max-width: 920px) {
-      .charts { grid-template-columns: minmax(0, 1fr) !important; }
-      .charts > .chart-card-models { grid-column: auto !important; }
-    }
-  </style>
 </head>
 
-<body>
+<body class="{{ theme | default('theme-all') }}">
 
   <aside class="sidebar">
 
@@ -71,11 +28,35 @@
 
     <a class="nav active" href="{{ url_for('index') }}">▦ &nbsp; Visão geral</a>
 
-    <div class="side-label">PROJETO</div>
+    <div class="side-label">PROJETOS</div>
 
-    <span class="project-link chosen">◈ &nbsp; {{ project }}</span>
+    <a class="project-link {% if selected_project in ('all', '') %}chosen{% endif %}"
 
-    <div class="side-note">Fonte: CSV local do OpenRouter.<br>Versão para análise de um único projeto; conexão com API em etapa futura.</div>
+       href="{{ url_for('index', project='all', start=filters.start, end=filters.end, month=filters.month) }}">◈ &nbsp; Todos os projetos</a>
+
+    <a class="project-link {% if selected_project == 'instant_doctor' %}chosen{% endif %}"
+
+       href="{{ url_for('index', project='instant_doctor', start=filters.start, end=filters.end, month=filters.month) }}">◈ &nbsp; Instant Doctor</a>
+
+    <a class="project-link {% if selected_project == 'two' %}chosen{% endif %}"
+
+       href="{{ url_for('index', project='two', start=filters.start, end=filters.end, month=filters.month) }}">◈ &nbsp; Two</a>
+
+    <a class="project-link {% if selected_project == 'fracta' %}chosen{% endif %} project-link-fracta"
+       href="{{ url_for('index', project='fracta', start=filters.start, end=filters.end, month=filters.month) }}">◈ &nbsp; Fracta</a>
+
+
+    {% if current_user.is_authenticated %}
+    <div class="account-panel">
+      <div class="account-avatar" aria-hidden="true">{{ current_user.name[:1] | upper }}</div>
+      <div class="account-info"><strong>{{ current_user.name }}</strong><small>{{ current_user.email }}</small></div>
+      <form method="post" action="{{ url_for('auth.logout') }}" class="logout-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      </form>
+    </div>
+    {% endif %}
+
+    <div class="side-note">Fonte: OpenRouter Analytics (beta).<br>Dados agregados do período consultado. Atualização ao carregar ou filtrar a página.</div>
 
   </aside>
 
@@ -85,37 +66,68 @@
 
       <div><span class="eyebrow">ANÁLISE DE USO DE IA · {{ project | upper }}</span><h1>Dashboard de tokens</h1><p>Consumo, custos, desempenho e modelos de inteligência artificial.</p></div>
 
-      <span class="status"><span class="status-dot"></span> Dados do CSV</span>
+      <span class="status"><span class="status-dot"></span> OpenRouter Analytics</span>
 
     </header>
-
-    {% if error %}
-
-      <section class="empty"><h2>Não foi possível carregar o CSV</h2><p>{{ error }}</p><p>Verifique se o arquivo está na pasta <code>data/</code>.</p></section>
-
-    {% else %}
-
-      <section class="data-panel"><div class="data-icon" aria-hidden="true">↗</div><div class="data-information"><span class="eyebrow">FONTE DOS DADOS</span><h2>Projeto 1 <span class="soft">/ OpenRouter</span></h2><p>{{ total_records }} registros importados <span class="sep">•</span> {{ initial_date }} — {{ final_date }} <span class="sep">•</span> Atualização a partir do CSV local</p></div><div class="source-label">CSV LOCAL</div></section>
 
       <section class="filters">
 
         <div><span class="eyebrow">PERSONALIZE SUA ANÁLISE</span><h2>Filtros</h2></div>
 
-        <form method="get" action="{{ url_for('index') }}" class="filter-form">
+        <form method="get" action="{{ url_for('index') }}" class="filter-form" id="filters-form">
 
-          <label>De<input type="date" name="start" value="{{ filters.start }}"></label>
+          <label>Projeto
 
-          <label>Até<input type="date" name="end" value="{{ filters.end }}"></label>
+            <select name="project" aria-label="Selecionar projeto">
 
-          <label>Provedor<select name="provider"><option value="">Todos</option>{% for p in providers %}<option value="{{ p }}" {% if filters.provider == p %}selected{% endif %}>{{ p }}</option>{% endfor %}</select></label>
+              <option value="all" {% if selected_project in ('all', '') %}selected{% endif %}>Todos os projetos</option>
 
-          <label>Modelo<select name="model"><option value="">Todos</option>{% for m in models %}<option value="{{ m }}" {% if filters.model == m %}selected{% endif %}>{{ m }}</option>{% endfor %}</select></label>
+              <option value="instant_doctor" {% if selected_project == 'instant_doctor' %}selected{% endif %}>Instant Doctor</option>
 
-          <button type="submit">Aplicar filtros</button><a class="clear-filters" href="{{ url_for('index') }}">Limpar</a>
+              <option value="two" {% if selected_project == 'two' %}selected{% endif %}>Two</option>
+              <option value="fracta" {% if selected_project == 'fracta' %}selected{% endif %}>Fracta</option>
+
+            </select>
+
+          </label>
+
+          <label>Mês
+
+            <select name="month" id="month-filter" aria-label="Filtrar por mês">
+
+              <option value="">Todo o histórico / Datas</option>
+
+              {% for opt in month_options %}
+
+                <option value="{{ opt.value }}" {% if filters.month == opt.value %}selected{% endif %}>{{ opt.label }}</option>
+
+              {% endfor %}
+
+            </select>
+
+          </label>
+
+          <label>De <input type="date" name="start" min="2025-11-12" value="{{ filters.start }}"></label>
+
+          <label>Até <input type="date" name="end" min="2025-11-12" value="{{ filters.end }}"></label>
+
+          <button type="submit">Aplicar filtro</button>
+
+          <a class="clear-filters" href="{{ url_for('index') }}">Limpar filtros</a>
 
         </form>
 
+        <p class="api-note">Escolha um <strong>mês</strong> ou um <strong>intervalo personalizado</strong>. Se deixar tudo vazio, o período vai do primeiro registro do projeto escolhido até hoje (UTC). {% if period_start and period_end %}Consulta: {{ period_start }} a {{ period_end }}.{% endif %} Na visão geral, o gráfico de <strong>custos dos últimos 15 dias</strong> usa o campo <strong>Até</strong> como referência, independentemente do campo De.</p>
+
       </section>
+
+    {% if error %}
+
+      <section class="empty"><h2>Não foi possível consultar a API</h2><p>{{ error }}</p><p>Confira a mensagem acima. Se indicar falha de autenticação, verifique a chave no <code>.env</code>; se indicar parâmetros ou métricas, será necessário ajustar a consulta Analytics.</p></section>
+
+    {% else %}
+
+      <section class="data-panel"><div class="data-icon" aria-hidden="true">↗</div><div class="data-information"><span class="eyebrow">FONTE DOS DADOS</span><h2>{{ project }} <span class="soft">/ OpenRouter</span></h2><p>{{ total_records }} requisições contabilizadas <span class="sep">•</span> Atividade: {{ initial_date }} — {{ final_date }} <span class="sep">•</span> Consulta: {{ period_start }} a {{ period_end }} (UTC)</p></div><div class="source-label">ANALYTICS API</div></section>
 
       {% if dashboard %}
 
@@ -129,7 +141,7 @@
 
           <article class="metric"><div class="metric-top"><span>Custo total</span><i aria-hidden="true">$</i></div><strong>{{ dashboard.cost }}</strong><small>Dólares americanos (USD)</small></article>
 
-          <article class="metric"><div class="metric-top"><span>Requisições</span><i aria-hidden="true">⇄</i></div><strong>{{ dashboard.requests }}</strong><small>Registros filtrados</small></article>
+          <article class="metric"><div class="metric-top"><span>Requisições</span><i aria-hidden="true">⇄</i></div><strong>{{ dashboard.requests }}</strong><small>Chamadas somadas da API</small></article>
 
         </section>
 
@@ -139,49 +151,296 @@
 
           <div><span>Tokens de raciocínio</span><b>{{ dashboard.reasoning }}</b></div>
 
-          <div><span>Tempo médio de geração</span><b>{{ dashboard.avg_latency }}</b></div>
+          <div title="{{ dashboard.latency_note }}"><span>Tempo médio de geração <small class="metric-hint">(estimado)</small></span><b>{{ dashboard.avg_latency }}</b><small class="metric-footnote">{{ dashboard.latency_note }}</small></div>
 
           <div><span>Custo médio por requisição</span><b>{{ dashboard.avg_cost }}</b></div>
 
         </section>
 
-        <section class="charts" aria-label="Gráficos de análise do projeto">
-          <article class="chart-card chart-card-models">
-            <h2>Modelos com maior consumo de tokens</h2>
-            <p>Os 7 modelos que mais processaram tokens no período selecionado</p>
-            <div id="models-visual" class="models-visual" aria-label="Comparação de consumo por modelo">
-              {{ dashboard.charts.model | safe }}
+        {% if compare_charts %}
+
+        <section class="comparison-section" aria-label="Comparação de projetos">
+
+          <div class="comparison-heading">
+
+            <span class="eyebrow">COMPARATIVO ENTRE PROJETOS</span>
+
+            <h2 class="comparison-title">
+              <span class="title-doctor">Instant Doctor</span>
+              <span class="title-separator">×</span>
+              <span class="title-two">Two</span>
+              <span class="title-separator">×</span>
+              <span class="title-fracta">Fracta</span>
+            </h2>
+
+            <p>Compare o consumo dos três projetos no mesmo período.</p>
+
+          </div>
+
+          <p class="comparison-intro">Os valores dos cartões superiores representam a <strong>soma dos três projetos</strong> no período selecionado. Nos gráficos, as cores separam cada projeto para comparação direta.</p>
+
+          {% if comparison_note %}<p class="comparison-note">{{ comparison_note }}</p>{% endif %}<div class="project-legend" aria-label="Legenda fixa de projetos"><span><i class="legend-dot legend-two"></i><strong>Two</strong> · roxo</span><span><i class="legend-dot legend-doctor"></i><strong>Instant Doctor</strong> · verde</span><span><i class="legend-dot legend-fracta"></i><strong>Fracta</strong> · azul</span></div>
+
+          <div class="comparison-cards">
+
+            {% for item in compare_rows %}
+
+              <article class="comparison-summary comparison-summary-{{ item.color_class }}">
+
+                <div class="comparison-project-title"><span class="comparison-dot"></span><h3>{{ item.name }}</h3></div>
+
+                <strong class="comparison-cost">{{ item.cost }}</strong>
+
+                <span>Participação no custo total: <strong>{{ item.cost_share }}%</strong></span>
+
+                <div class="comparison-track" role="img" aria-label="{{ item.name }}: {{ item.cost_share }} por cento do custo total"><progress class="comparison-progress" value="{{ item.cost_share }}" max="100">{{ item.cost_share }}%</progress></div>
+
+                <div class="comparison-stats"><span>Tokens <strong>{{ item.tokens }}</strong></span><span>Requisições <strong>{{ item.requests }}</strong></span></div>
+
+              </article>
+
+            {% endfor %}
+
+          </div>
+
+          <div class="comparison-charts">
+
+            <article class="chart-card chart-card-comparison-evolution"><h2>Custos ao longo do tempo por projeto</h2><p>Compare as despesas de Instant Doctor, Two e Fracta dia a dia</p>{{ compare_charts.evolution | safe }}</article>
+
+            <article class="chart-card"><h2>Custos por projeto</h2><p>Comparação dos custos acumulados em USD</p>{{ compare_charts.cost | safe }}</article>
+
+            <article class="chart-card"><h2>Tokens por projeto</h2><p>Entrada e saída somadas em cada projeto</p>{{ compare_charts.tokens | safe }}</article>
+
+            <article class="chart-card"><h2>Requisições por projeto</h2><p>Quantidade total de chamadas por projeto</p>{{ compare_charts.requests | safe }}</article>
+
+          </div>
+
+        </section>
+
+        {% endif %}
+
+          {% if last_15_chart %}
+          <article class="chart-card chart-card-last-15-days" aria-label="Custo diário dos últimos 15 dias por projeto">
+            <div class="last-15-heading">
+              <div>
+                <h2>Custos dos últimos 15 dias{% if selected_project == 'all' %} por projeto{% endif %}</h2>
+                <p>{% if selected_project == 'all' %}Instant Doctor, Two e Fracta{% else %}{{ project }}{% endif %} · {{ last_15_start }} a {{ last_15_end }} (UTC) · referência: campo <strong>Até</strong></p>
+              </div>
+              <span class="last-15-period">15 dias</span>
             </div>
+            {{ last_15_chart | safe }}
           </article>
+          {% endif %}
+
+        <p class="chart-help">Dica: passe o mouse para ver valores exatos. Para desfazer o zoom, dê dois cliques no gráfico ou use o ícone <strong>Restaurar eixos</strong> na barra superior dele.</p>
+
+        <section class="charts" aria-label="Gráficos de análise do OpenRouter">
+
+          <article class="chart-card chart-card-models">
+
+            <h2>Modelos com maior consumo de tokens</h2>
+
+            <p>Os 7 modelos com mais tokens; cores identificam os projetos quando a visão geral está ativa</p>
+
+            <div id="models-visual" class="models-visual" aria-label="Consumo de tokens por modelo">
+
+              {{ dashboard.charts.model | safe }}
+
+            </div>
+
+          </article>
+
+          {% if dashboard.charts.compare_mode %}
+
+          <article class="chart-card chart-card-shared-models">
+
+            <h2>Modelos utilizados por mais de um projeto</h2>
+
+            {% if dashboard.charts.shared_models_count %}
+
+              <p>{{ dashboard.charts.shared_models_count }} modelo(s) utilizados por pelo menos dois projetos no período. Two (roxo), Instant Doctor (verde) e Fracta (azul). Exibindo até 8 modelos.</p>
+
+              {{ dashboard.charts.shared_models | safe }}
+
+            {% else %}
+
+              <p class="chart-empty-note">Não foram encontrados modelos com o mesmo identificador utilizados por mais de um projeto neste período. O gráfico Top 7 acima pode mostrar modelos exclusivos de cada um.</p>
+
+            {% endif %}
+
+          </article>
+
+          {% endif %}
+
           <article class="chart-card chart-card-cost">
+
             <h2>Evolução dos custos</h2>
-            <p>Gasto diário em USD</p>
+
+            <p>Custo por {{ dashboard.charts.period_label }} (USD) · {% if dashboard.charts.compare_mode %}Two (roxo), Instant Doctor (verde) e Fracta (azul){% else %}projeto selecionado{% endif %}</p>
+
             {{ dashboard.charts.cost | safe }}
+
           </article>
-          <article class="chart-card chart-card-provider">
-            <h2>Distribuição por provedor</h2>
-            <p>Participação no consumo de tokens</p>
-            {{ dashboard.charts.provider | safe }}
+
+          <article class="chart-card chart-card-tokens">
+
+            <h2>{% if dashboard.charts.compare_mode %}Tokens por projeto ao longo do tempo{% else %}Tokens de entrada e saída{% endif %}</h2>
+
+            <p>{% if dashboard.charts.compare_mode %}Total de tokens por projeto e por {{ dashboard.charts.period_label }}{% else %}Tokens de entrada e de saída por {{ dashboard.charts.period_label }}{% endif %}</p>
+
+            {{ dashboard.charts.usage | safe }}
+
           </article>
+
+          <article class="chart-card chart-card-cost-model">
+
+            <h2>Custo por modelo de IA</h2>
+
+            <p>Custo acumulado por modelo (USD) · {% if dashboard.charts.compare_mode %}comparação entre projetos{% else %}projeto selecionado{% endif %}</p>
+
+            {{ dashboard.charts.cost_by_model | safe }}
+
+          </article>
+
+          <article class="chart-card chart-card-requests">
+
+            <h2>Requisições ao longo do tempo</h2>
+
+            <p>Requisições por {{ dashboard.charts.period_label }} · {% if dashboard.charts.compare_mode %}comparação entre Instant Doctor, Two e Fracta{% else %}projeto selecionado{% endif %}</p>
+
+            {{ dashboard.charts.requests_daily | safe }}
+
+          </article>
+
         </section>
 
         <section class="table-card">
 
-          <div class="table-header"><div><span class="eyebrow">REGISTROS</span><h2>Histórico de requisições</h2><p>Mostrando {{ first }}–{{ last }} de {{ count }} registros</p></div><span class="source-label">Página {{ page }} / {{ pages }}</span></div>
+          <div class="table-header">
 
-          <div class="table-wrap"><table><thead><tr><th>Data / hora</th><th>Modelo</th><th>Provedor</th><th>Entrada</th><th>Saída</th><th>Custo</th><th>Geração</th></tr></thead><tbody>
+            <div>
 
-          {% for r in records %}<tr><td>{{ r.date }}</td><td>{{ r.model }}</td><td>{{ r.provider }}</td><td>{{ r.input }}</td><td>{{ r.output }}</td><td>{{ r.cost }}</td><td>{{ r.latency }}</td></tr>{% endfor %}
+              <span class="eyebrow">REGISTROS</span>
 
-          </tbody></table></div>
+              <h2>Atividade agregada</h2>
+
+              <p>
+
+                Mostrando {{ first }}–{{ last }} de {{ count }}
+
+                agrupamentos por projeto, dia e modelo
+
+              </p>
+
+            </div>
+
+            <span class="source-label">
+
+              Página {{ page }} / {{ pages }}
+
+            </span>
+
+          </div>
+
+          <div class="table-wrap">
+
+            <table>
+
+              <thead>
+
+                <tr>
+
+                  <th>Projeto</th>
+
+                  <th>Data (UTC)</th>
+
+                  <th>Modelo</th>
+
+                  <th>Requisições</th>
+
+                  <th>Entrada</th>
+
+                  <th>Saída</th>
+
+                  <th>Custo</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                {% for r in records %}
+
+                <tr>
+
+                  <td>{{ r.project }}</td>
+
+                  <td>{{ r.date }}</td>
+
+                  <td>{{ r.model }}</td>
+
+                  <td>{{ r.requests }}</td>
+
+                  <td>{{ r.input }}</td>
+
+                  <td>{{ r.output }}</td>
+
+                  <td>{{ r.cost }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+          <p class="api-note">
+
+            Cada linha representa um agrupamento de atividade por projeto,
+
+            data e modelo, e não uma requisição individual.
+
+            A API Analytics não retorna o histórico de gerações
+
+            individuais nesta consulta.
+
+          </p>
 
           <div class="pagination">
 
-            {% if page > 1 %}<a href="{{ url_for('index', page=page-1, **filters) }}">← Anterior</a>{% else %}<span>← Anterior</span>{% endif %}
+            {% if page > 1 %}
+
+              <a href="{{ url_for('index', page=page-1, **filters) }}">
+
+                ← Anterior
+
+              </a>
+
+            {% else %}
+
+              <span>← Anterior</span>
+
+            {% endif %}
 
             <span>Página {{ page }} de {{ pages }}</span>
 
-            {% if page < pages %}<a href="{{ url_for('index', page=page+1, **filters) }}">Próxima →</a>{% else %}<span>Próxima →</span>{% endif %}
+            {% if page < pages %}
+
+              <a href="{{ url_for('index', page=page+1, **filters) }}">
+
+                Próxima →
+
+              </a>
+
+            {% else %}
+
+              <span>Próxima →</span>
+
+            {% endif %}
 
           </div>
 
@@ -189,129 +448,48 @@
 
       {% else %}
 
-        <section class="empty"><h2>Nenhum registro encontrado</h2><p>Altere os filtros ou limpe os filtros para visualizar os dados do Projeto 1.</p><a class="clear-filters" href="{{ url_for('index') }}">Limpar filtros</a></section>
+        <section class="empty"><h2>Nenhum registro encontrado</h2><p>Nenhuma atividade retornada para as datas selecionadas. Experimente alterar o intervalo de datas ou verificar a disponibilidade do histórico na API Analytics.</p><a class="clear-filters" href="{{ url_for('index') }}">Limpar filtros</a></section>
 
       {% endif %}
 
     {% endif %}
 
-    <footer>TokenScope · Dashboard de análise de tokens · Projeto 1 · Dados locais</footer>
+    <footer>TokenScope · Dashboard de custos e atividade · OpenRouter Analytics</footer>
 
   </main>
 
   <script>
-    // Os dados e cálculos continuam vindo do app.py e do CSV.
-    (() => {
-      const palette = ['#7768dc', '#33b2a6', '#f1ac64', '#e78eaa', '#81a7e8', '#9fc879'];
-      const intFmt = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
-      const $ = (selector, root = document) => root.querySelector(selector);
-
-      function drawModelBars() {
-        const host = document.getElementById('models-visual');
-        if (!host || host.querySelector('.token-bars')) return true;
-        const graph = $('.plotly-graph-div', host);
-        if (!graph || !Array.isArray(graph.data) || !graph.data.length) return false;
-        const rows = [];
-        for (const trace of graph.data) {
-          if (trace.type !== 'bar' || trace.orientation !== 'h') continue;
-          (trace.y || []).forEach((label, index) => {
-            const value = Number((trace.x || [])[index]);
-            if (label != null && Number.isFinite(value)) rows.push({ label: String(label), value });
+  (() => {
+    function initialise() {
+      if (typeof Plotly !== 'undefined') {
+        window.addEventListener('resize', () => {
+          document.querySelectorAll('.plotly-graph-div').forEach(graph => {
+            try { Plotly.Plots.resize(graph); } catch (error) { /* gráfico opcional */ }
           });
-        }
-        if (!rows.length) return false;
-        rows.sort((a, b) => b.value - a.value);
-        const max = Math.max(...rows.map(row => row.value), 1);
-        const list = document.createElement('div');
-        list.className = 'token-bars';
-        rows.forEach(row => {
-          const item = document.createElement('div');
-          item.className = 'token-bar-item';
-          const heading = document.createElement('div');
-          heading.className = 'token-bar-heading';
-          const name = document.createElement('span');
-          name.className = 'token-model-name';
-          name.textContent = row.label;
-          name.title = row.label;
-          const number = document.createElement('strong');
-          number.className = 'token-model-value';
-          number.textContent = intFmt.format(row.value) + ' tokens';
-          heading.append(name, number);
-          const track = document.createElement('div');
-          track.className = 'token-bar-track';
-          track.setAttribute('role', 'img');
-          track.setAttribute('aria-label', row.label + ': ' + intFmt.format(row.value) + ' tokens');
-          const fill = document.createElement('div');
-          fill.className = 'token-bar-fill';
-          fill.style.width = (row.value / max * 100).toFixed(3) + '%';
-          track.append(fill);
-          item.append(heading, track);
-          list.append(item);
         });
-        // A lista substitui o SVG do Plotly apenas nesse gráfico.
-        host.replaceChildren(list);
-        return true;
       }
+    }
 
-      function initialiseModelBars() {
-        // O Plotly pode inicializar o gráfico após o evento de carregamento.
-        if (drawModelBars()) return;
-        const host = document.getElementById('models-visual');
-        if (!host) return;
-        const observer = new MutationObserver(() => {
-          if (drawModelBars()) observer.disconnect();
-        });
-        observer.observe(host, { childList: true, subtree: true });
-        // Limita a observação, mantendo o gráfico original caso o Plotly falhe.
-        window.setTimeout(() => observer.disconnect(), 6000);
-        window.setTimeout(drawModelBars, 150);
-        window.setTimeout(drawModelBars, 600);
-      }
+    const month = document.querySelector('#month-filter');
+    const startField = document.querySelector('input[name="start"]');
+    const endField = document.querySelector('input[name="end"]');
 
-      async function themeGraph(graph, type) {
-        if (!graph || typeof Plotly === 'undefined') return;
-        const shared = {
-          paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
-          font: { family: 'DM Sans, system-ui, sans-serif', color: '#65728a', size: 11 },
-          hoverlabel: { bgcolor: '#fff', bordercolor: '#e4e7f2', font: { color: '#242a40' } },
-          'xaxis.gridcolor': '#edf0f6', 'yaxis.gridcolor': '#edf0f6',
-          'xaxis.zeroline': false, 'yaxis.zeroline': false,
-          autosize: true, showlegend: type === 'provider'
-        };
-        const options = type === 'cost' ? {
-          height: 330, margin: { l: 58, r: 12, t: 12, b: 50 },
-          'xaxis.type': 'date', 'xaxis.tickformat': '%d/%m', 'xaxis.nticks': 5,
-          'xaxis.tickangle': 0, 'xaxis.title.text': '',
-          'yaxis.tickprefix': '$', 'yaxis.tickformat': ',.0f',
-          'yaxis.nticks': 5, 'yaxis.title.text': '', 'yaxis.rangemode': 'tozero'
-        } : {
-          height: 330, margin: { l: 20, r: 20, t: 12, b: 55 },
-          'legend.orientation': 'h', 'legend.y': -0.22, 'legend.x': 0,
-          'legend.font.size': 10
-        };
-        await Plotly.relayout(graph, { ...shared, ...options });
-        if (type === 'cost') await Plotly.restyle(graph, { 'marker.color': palette[0] }, [0]);
-        if (type === 'provider') await Plotly.restyle(graph, { 'marker.colors': [palette] }, [0]);
-        Plotly.Plots.resize(graph);
-      }
-
-      async function initialise() {
-        initialiseModelBars();
-        if (typeof Plotly === 'undefined') return;
-        for (const [selector, type] of [
-          ['.chart-card-cost', 'cost'],
-          ['.chart-card-provider', 'provider']
-        ]) {
-          const graph = $('.plotly-graph-div', $(selector));
-          if (graph) {
-            try { await themeGraph(graph, type); }
-            catch (e) { console.warn('Ajuste do gráfico:', e); }
-          }
+    if (month) {
+      month.addEventListener('change', () => {
+        if (month.value) {
+          if (startField) startField.value = '';
+          if (endField) endField.value = '';
         }
-      }
-      window.addEventListener('load', initialise);
-    })();
-  </script>
+      });
+    }
+    [startField, endField].forEach(field => {
+      if (field) field.addEventListener('change', () => {
+        if (field.value && month) month.value = '';
+      });
+    });
+    window.addEventListener('load', initialise);
+  })();
+</script>
 
 </body>
 

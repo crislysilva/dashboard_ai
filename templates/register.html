@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% if demo_mode %}Demonstração do cadastro{% elif registration_locked %}Cadastro indisponível{% else %}Cadastro{% endif %} | TokenScope</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='auth.css') }}">
+</head>
+<body class="auth-page">
+  <main class="auth-card">
+    <div class="auth-brand"><div class="brand-mark">✳</div><div><strong>TokenScope</strong><span>AI ANALYTICS</span></div></div>
+    <div class="auth-heading"><span class="eyebrow">{% if demo_mode %}MODO DE DEMONSTRAÇÃO{% elif registration_locked %}CADASTRO ENCERRADO{% else %}PRIMEIRO ACESSO{% endif %}</span><h1>Criar conta</h1><p>{% if demo_mode %}Visualização da tela de cadastro. Nenhum dado será enviado ou registrado.{% elif registration_locked %}Esta instalação já possui uma conta. Você pode visualizar os campos, mas não é possível criar um segundo usuário.{% else %}Cadastre a conta única que terá acesso completo ao dashboard.{% endif %}</p></div>
+    {% with messages=get_flashed_messages(with_categories=true) %}{% for kind,message in messages %}<div class="flash {{ kind }}" role="alert">{{ message }}</div>{% endfor %}{% endwith %}
+    {% if demo_mode or registration_locked %}
+    <div class="demo-notice" role="status">{% if registration_locked %}Cadastro indisponível: a conta inicial já foi criada. Nenhum novo cadastro será aceito.{% else %}Prévia somente para apresentação. Sua conta e seus dados no PostgreSQL permanecem intactos.{% endif %}</div>
+    {% endif %}
+    <form method="post" class="auth-form" {% if demo_mode or registration_locked %}inert{% endif %}>
+      {% if not (demo_mode or registration_locked) %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endif %}
+      <label for="name">Nome completo</label><input id="name" name="name" autocomplete="name" maxlength="120" minlength="2" placeholder="Seu nome" required value="{{ request.form.get('name','') }}">
+      <label for="email">E-mail</label><input id="email" type="email" name="email" autocomplete="email" maxlength="254" placeholder="seu@email.com" required value="{{ request.form.get('email','') }}">
+      <label for="password">Senha</label><input id="password" type="password" name="password" autocomplete="new-password" minlength="12" maxlength="128" required placeholder="Mínimo de 12 caracteres">
+      <label for="confirm_password">Confirmar senha</label><input id="confirm_password" type="password" name="confirm_password" autocomplete="new-password" minlength="12" maxlength="128" required>
+      {% if demo_mode or registration_locked %}<button type="button" disabled aria-disabled="true">{% if registration_locked %}Cadastro já realizado{% else %}Cadastro desativado na demonstração{% endif %}</button>
+      {% else %}<button type="submit">Criar conta e acessar</button>{% endif %}
+    </form>
+    {% if demo_mode or registration_locked %}
+    <a class="demo-back" href="{{ url_for('index') if current_user.is_authenticated else url_for('auth.login') }}">← {{ 'Voltar ao dashboard' if current_user.is_authenticated else 'Voltar ao login' }}</a>
+    {% endif %}
+    <p class="auth-foot">{% if demo_mode or registration_locked %}Esta tela não permite criar contas.{% else %}Uma conta por instalação. Senha protegida por hash no PostgreSQL.{% endif %}</p>
+  </main>
+</body></html>
